@@ -11,6 +11,7 @@ import scriptsRouter from './routes/scripts';
 import paymentsRouter from './routes/payments';
 import auditRouter from './routes/audit';
 import walletRouter from './routes/wallet';
+import tokenLookupRouter from './routes/tokenLookup';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/scripts', scriptsRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/audit', auditRouter);
 app.use('/api/wallet', walletRouter);
+app.use('/api/token', tokenLookupRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
