@@ -57,10 +57,17 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 `;
 
+const alterations = `
+  ALTER TABLE payments ADD COLUMN IF NOT EXISTS kol_handle TEXT;
+  ALTER TABLE payments ADD COLUMN IF NOT EXISTS campaign_id UUID REFERENCES campaigns(id) ON DELETE SET NULL;
+  ALTER TABLE payments ADD COLUMN IF NOT EXISTS campaign_name TEXT;
+`;
+
 export async function migrate() {
   const client = await pool.connect();
   try {
     await client.query(schema);
+    await client.query(alterations);
     console.log('✅ DB migrations complete');
   } finally {
     client.release();
