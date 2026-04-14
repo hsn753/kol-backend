@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    platform: linux/amd64
+    container_name: kol_tool_postgres
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "127.0.0.1:${DATABASE_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: kol_tool_redis
+    command:
+      [
+        "redis-server",
+        "--requirepass",
+        "${REDIS_PASS}",
+        "--bind",
+        "0.0.0.0",
+        "--protected-mode",
+        "yes",
+        "--maxmemory-policy",
+        "noeviction",
+      ]
+    ports:
+      - "127.0.0.1:${REDIS_PORT}:6379"
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
