@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/batch', async (req, res) => {
   const { payments } = req.body as { payments: Array<{ kol_id: string; wallet: string; amount: number }> };
-  if (!payments?.length) return res.status(400).json({ error: 'payments array required' });
+  if (!Array.isArray(payments) || !payments.length) return res.status(400).json({ error: 'payments array required' });
 
   try {
     const paymentInputs = payments.map((p) => ({ wallet: p.wallet, amount: p.amount }));
