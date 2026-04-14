@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import axios from 'axios';
 
 const router = Router();
 
@@ -14,12 +15,12 @@ router.get('/:mint', async (req, res) => {
 
   try {
     const [priceRes, metaRes] = await Promise.all([
-      fetch(`https://price.jup.ag/v6/price?ids=${mint}`),
-      fetch(`https://tokens.jup.ag/token/${mint}`),
+      axios.get(`https://price.jup.ag/v6/price?ids=${mint}`),
+      axios.get(`https://tokens.jup.ag/token/${mint}`),
     ]);
 
-    const priceData = await priceRes.json() as { data?: Record<string, { price: number }> };
-    const meta = await metaRes.json() as {
+    const priceData = priceRes.data as { data?: Record<string, { price: number }> };
+    const meta = metaRes.data as {
       symbol?: string;
       name?: string;
       extensions?: { coingeckoId?: string };
@@ -38,10 +39,10 @@ router.get('/:mint', async (req, res) => {
 
     if (meta?.extensions?.coingeckoId) {
       try {
-        const cgRes = await fetch(
+        const cgRes = await axios.get(
           `https://api.coingecko.com/api/v3/coins/${meta.extensions.coingeckoId}?localization=false&tickers=false&community_data=false&developer_data=false`
         );
-        const cg = await cgRes.json() as {
+        const cg = cgRes.data as {
           market_data?: {
             market_cap?: { usd?: number };
             price_change_percentage_24h?: number;
