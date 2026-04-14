@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node_modules/.bin/nodemon --watch src --ext ts --exec 'node_modules/.bin/ts-node src/index.ts'",
-    "build": "node_modules/.bin/tsc",
+    "build": "node_modules/.bin/tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "test": "node_modules/.bin/jest --forceExit --detectOpenHandles"
   },
