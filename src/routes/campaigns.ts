@@ -15,11 +15,12 @@ router.get('/', async (_req, res) => {
 router.post('/', async (req, res) => {
   const { name, ticker, cashtag, start_date, end_date, script_template } = req.body;
   try {
+    await pool.query(`UPDATE campaigns SET status='inactive' WHERE status='active'`);
     const { rows } = await pool.query(`
       INSERT INTO campaigns (name, ticker, cashtag, start_date, end_date, script_template)
       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
     `, [name, ticker, cashtag, start_date, end_date, script_template]);
-    await pool.query(`INSERT INTO audit_log (action, campaign_name, detail) VALUES ('campaign_created', $1, 'New campaign created')`, [name]);
+    await pool.query(`INSERT INTO audit_log (action, campaign_name, detail) VALUES ('campaign_created', $1, 'New campaign created — previous campaign set to inactive')`, [name]);
     res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: String(err) });
