@@ -49,8 +49,10 @@ export async function batchUSDCPay(payments: BatchPayment[]): Promise<BatchResul
   const payerATA = await getOrCreateAssociatedTokenAccount(connection, payer, mintPubkey, payer.publicKey);
 
   const results: BatchResult[] = [];
+  const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-  for (const payment of payments) {
+  for (let i = 0; i < payments.length; i++) {
+    const payment = payments[i];
     try {
       const destPubkey = new PublicKey(payment.wallet);
       const destATA = await getOrCreateAssociatedTokenAccount(connection, payer, mintPubkey, destPubkey);
@@ -64,6 +66,7 @@ export async function batchUSDCPay(payments: BatchPayment[]): Promise<BatchResul
     } catch (err) {
       results.push({ wallet: payment.wallet, amount: payment.amount, error: String(err) });
     }
+    if (i < payments.length - 1) await delay(1500);
   }
 
   return results;
