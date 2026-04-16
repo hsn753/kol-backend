@@ -61,6 +61,14 @@ const alterations = `
   ALTER TABLE payments ADD COLUMN IF NOT EXISTS kol_handle TEXT;
   ALTER TABLE payments ADD COLUMN IF NOT EXISTS campaign_id UUID REFERENCES campaigns(id) ON DELETE SET NULL;
   ALTER TABLE payments ADD COLUMN IF NOT EXISTS campaign_name TEXT;
+
+  ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_kol_id_fkey;
+  ALTER TABLE payments ADD CONSTRAINT payments_kol_id_fkey
+    FOREIGN KEY (kol_id) REFERENCES kols(id) ON DELETE SET NULL;
+
+  ALTER TABLE script_logs DROP CONSTRAINT IF EXISTS script_logs_kol_id_fkey;
+  ALTER TABLE script_logs ADD CONSTRAINT script_logs_kol_id_fkey
+    FOREIGN KEY (kol_id) REFERENCES kols(id) ON DELETE SET NULL;
 `;
 
 export async function migrate() {
