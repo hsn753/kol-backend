@@ -23,8 +23,14 @@ export function getConnection() {
 export function getPayerKeypair(): Keypair {
   const raw = process.env.PAYER_SECRET_KEY;
   if (!raw) throw new Error('PAYER_SECRET_KEY not set');
-  const parsed = JSON.parse(raw) as number[];
-  return Keypair.fromSecretKey(Uint8Array.from(parsed));
+  const trimmed = raw.trim();
+  try {
+    const parsed = JSON.parse(trimmed) as number[];
+    if (Array.isArray(parsed)) return Keypair.fromSecretKey(Uint8Array.from(parsed));
+  } catch { /* not JSON array, try base58 */ }
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const bs58 = require('bs58') as { decode: (s: string) => Buffer };
+  return Keypair.fromSecretKey(bs58.decode(trimmed));
 }
 
 export interface BatchPayment {
